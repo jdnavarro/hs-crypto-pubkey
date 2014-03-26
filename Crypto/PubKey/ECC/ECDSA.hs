@@ -60,16 +60,32 @@ verify hash pk@(PublicKey curve q) (Signature r s) msg
         let z  = tHash hash msg n
             u1 = z * w `mod` n
             u2 = r * w `mod` n
-            -- TODO: Use Shamir's trick
-            g' = pointMul curve u1 g
-            q' = pointMul curve u2 q
-            x  = pointAdd curve g' q'
+            x = shamir curve u1 g u2 q
         case x of
              PointO     -> Nothing
              Point x1 _ -> return $ x1 `mod` n
   where n = ecc_n cc
         g = ecc_g cc
         cc = common_curve $ public_curve pk
+
+-- | Efficiently compute r1*p1 + r2*p2
+
+-- Shamelessly ripped off from
+-- https://github.com/plaprade/haskoin-crypto/blob/master/Network/Haskoin/Crypto/Point.hs
+shamir :: Curve -> Integer -> Point -> Integer -> Point -> Point
+shamir curve r1 p1 r2 p2 = go r1 r2
+  where
+    q' = pointAdd curve p1 p2
+    go 0 0 = PointO
+    go a b
+        | ea && eb = b2
+        | ea = pointAdd curve b2 p2
+        | eb = pointAdd curve b2 p1
+        | otherwise = pointAdd curve b2 q'
+      where
+        b2 = pointDouble curve $ go (a `shiftR` 1) (b `shiftR` 1)
+        ea = even a
+        eb = even b
 
 -- | Truncate and hash.
 tHash ::  HashFunction -> ByteString -> Integer -> Integer
