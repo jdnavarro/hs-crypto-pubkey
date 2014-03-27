@@ -71,11 +71,17 @@ main = do
             , bench "verify" $ nf (PSS.verify pssParams rsaPublickey bs) signedMsgPSS
             ]
         , bgroup "ECDSA secp160r1"
-            [ bench "sign" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyP SHA1.hash) bs
+            [ bgroup "signing"
+                [ bench "slow" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeySlowP SHA1.hash) bs
+                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyP SHA1.hash) bs
+                ]
             , bench "verify"  $ nf (ECDSA.verify SHA1.hash ecdsaPublickeyP ecdsaSignatureP) bs
             ]
         , bgroup "ECDSA sect163k1"
-            [ bench "sign" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyB SHA1.hash) bs
+            [ bgroup "signing"
+                [ bench "slow" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeySlowB SHA1.hash) bs
+                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyB SHA1.hash) bs
+                ]
             , bench "verify"  $ nf (ECDSA.verify SHA1.hash ecdsaPublickeyB ecdsaSignatureB) bs
             ]
         ]

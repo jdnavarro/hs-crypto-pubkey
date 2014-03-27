@@ -42,6 +42,8 @@ ecdsaCurveP = ECC.getCurveByName ECC.SEC_p160r1
 
 ecdsaPrivatekeyP = ECDSA.PrivateKey ecdsaCurveP 971761939728640320549601132085879836204587084162
 
+ecdsaPrivatekeySlowP = ECDSA.PrivateKey ecdsaCurveP 0
+
 ecdsaPublickeyP = ECDSA.PublicKey
      ecdsaCurveP
     (ECC.Point 466448783855397898016055842232266600516272889280
@@ -50,6 +52,8 @@ ecdsaPublickeyP = ECDSA.PublicKey
 ecdsaCurveB = ECC.getCurveByName ECC.SEC_t163k1
 
 ecdsaPrivatekeyB = ECDSA.PrivateKey ecdsaCurveB 5321230001203043918714616464614664646674949479949
+
+ecdsaPrivatekeySlowB = ECDSA.PrivateKey ecdsaCurveB 0
 
 ecdsaPublickeyB = ECDSA.PublicKey
     ecdsaCurveB
