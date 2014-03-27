@@ -60,8 +60,7 @@ verify hash pk@(PublicKey curve q) (Signature r s) msg
         let z  = tHash hash msg n
             u1 = z * w `mod` n
             u2 = r * w `mod` n
-            x = shamir curve u1 g u2 q
-        case x of
+        case shamir curve u1 g u2 q of
              PointO     -> Nothing
              Point x1 _ -> return $ x1 `mod` n
   where n = ecc_n cc
