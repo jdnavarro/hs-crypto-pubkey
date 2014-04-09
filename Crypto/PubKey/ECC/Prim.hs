@@ -8,6 +8,8 @@ module Crypto.PubKey.ECC.Prim
     ) where
 
 import Data.Maybe
+import Data.Bits
+import Crypto.Number.Basic
 import Crypto.Number.ModArithmetic
 import Crypto.Number.F2m
 import Crypto.Types.PubKey.ECC
@@ -54,14 +56,29 @@ pointDouble (CurveF2m (CurveBinary fx cc)) (Point xp yp) = fromMaybe PointO $ do
     return $ Point xr yr
   where a = ecc_a cc
 
+pointMul :: Curve -> Integer -> Point -> Point
+pointMul = montgomeryLadder
+
 -- | Elliptic curve point multiplication (double and add algorithm).
 --
 -- /WARNING:/ Vulnerable to timing attacks.
-pointMul :: Curve -> Integer -> Point -> Point
-pointMul c n p
+doubleAndAdd :: Curve -> Integer -> Point -> Point
+doubleAndAdd c n p
     | n == 1 = p
     | odd n = pointAdd c p (pointMul c (n - 1) p)
     | otherwise = pointMul c (n `div` 2) (pointDouble c p)
+
+montgomeryLadder :: Curve -> Integer -> Point -> Point
+montgomeryLadder c n p = ex g (pointDouble c p) (log2 k - 1)
+  where m = case c of
+                 CurveFP  (CurvePrime  pr _) -> pr
+                 CurveF2m (CurveBinary fx _) -> fx
+        g = ecc_g $ common_curve c
+        k = n `mod` (m - 1)
+        ex p1 p2 i
+            | i < 0 = p1
+            | not (testBit k i) = ex (pointDouble c p1) (pointAdd c p1 p2) (i - 1)
+            | otherwise = ex (pointAdd c p1 p2) (pointDouble c p2) (i - 1)
 
 -- | div and mod
 divmod :: Integer -> Integer -> Integer -> Integer
