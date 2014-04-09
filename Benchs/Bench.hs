@@ -33,8 +33,8 @@ main = do
         !blinder = fst $ generateBlinder rng (RSA.public_n rsaPublickey)
         oaepParams = OAEP.defaultOAEPParams SHA1.hash
         pssParams  = PSS.defaultPSSParamsSHA1
-        ecdsaSignatureP = fst $ ECDSA.sign rng ecdsaPrivatekeyP SHA1.hash bs
-        ecdsaSignatureB = fst $ ECDSA.sign rng ecdsaPrivatekeyB SHA1.hash bs
+        !ecdsaSignatureP = fst $ ECDSA.sign rng ecdsaPrivatekeyP SHA1.hash bs
+        !ecdsaSignatureB = fst $ ECDSA.sign rng ecdsaPrivatekeyB SHA1.hash bs
     defaultMain
         [ bgroup "RSA PKCS15"
             [ bench "encryption" $ nf (right . fst . PKCS15.encrypt rng rsaPublickey) bs
@@ -73,14 +73,14 @@ main = do
         , bgroup "ECDSA secp160r1"
             [ bgroup "signing"
                 [ bench "slow" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeySlowP SHA1.hash) bs
-                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyP SHA1.hash) bs
+                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyP     SHA1.hash) bs
                 ]
             , bench "verify"  $ nf (ECDSA.verify SHA1.hash ecdsaPublickeyP ecdsaSignatureP) bs
             ]
         , bgroup "ECDSA sect163k1"
             [ bgroup "signing"
                 [ bench "slow" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeySlowB SHA1.hash) bs
-                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyB SHA1.hash) bs
+                , bench "fast" $ nf (fst . ECDSA.sign rng ecdsaPrivatekeyB     SHA1.hash) bs
                 ]
             , bench "verify"  $ nf (ECDSA.verify SHA1.hash ecdsaPublickeyB ecdsaSignatureB) bs
             ]

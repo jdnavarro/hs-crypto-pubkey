@@ -14,7 +14,7 @@ import Crypto.Types.PubKey.ECC
 
 -- | Elliptic Curve point addition.
 --
--- /WARNING:/ Vulnerable to timing attacks.
+-- /WARNING:/ May be vulnerable to timing attacks.
 pointAdd :: Curve -> Point -> Point -> Point
 pointAdd _ PointO PointO = PointO
 pointAdd _ PointO q = q
@@ -38,7 +38,7 @@ pointAdd c@(CurveF2m (CurveBinary fx cc)) p@(Point xp yp) q@(Point xq yq)
 
 -- | Elliptic Curve point doubling.
 --
--- /WARNING:/ Vulnerable to timing attacks.
+-- /WARNING:/ May be vulnerable to timing attacks.
 pointDouble :: Curve -> Point -> Point
 pointDouble _ PointO = PointO
 pointDouble (CurveFP (CurvePrime pr cc)) (Point xp yp) =
